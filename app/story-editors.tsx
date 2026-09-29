@@ -7,7 +7,7 @@ import {Textarea} from '@/components/ui/textarea';
 import {Checkbox} from '@/components/ui/checkbox';
 import {Select,SelectContent,SelectItem,SelectTrigger,SelectValue} from '@/components/ui/select';
 import {toast} from 'sonner';
-import {sourceKinds,sourceKindLabels,claimKinds,claimKindLabels,outputFormats,outputFormatLabels,checklistItems,X_LIMIT,type Source,type Claim,type Output,type ChecklistKey} from '@/lib/model';
+import {sourceKinds,sourceKindLabels,claimKinds,claimKindLabels,outputFormats,outputFormatLabels,checklistItems,X_LIMIT,styleHints,type Source,type Claim,type Output,type ChecklistKey} from '@/lib/model';
 
 const newId=(p:string)=>p+Math.random().toString(36).slice(2,10);
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Riyadh'}).format(new Date());
@@ -73,7 +73,7 @@ export function OutputsEditor({outputs,onChange,disabled}:{outputs:Output[];onCh
    </label>)}
    {o.format==='thread'&&!disabled&&o.parts.length<25&&<Button variant="ghost" size="sm" onClick={()=>set(i,{parts:[...o.parts,'']})}><Plus size={15}/>جزء جديد في السلسلة</Button>}
    <label className="field"><span>رابط الوسيط المرافق (اختياري)</span><Input dir="ltr" type="url" placeholder="https://" value={o.assetUrl} disabled={disabled} onChange={e=>set(i,{assetUrl:e.target.value})}/></label>
-   <div className="x-preview" aria-label="معاينة">{o.parts.filter(x=>x.trim()).map((x,k)=><p key={k}>{x}</p>)}{!o.parts.some(x=>x.trim())&&<small className="muted">تظهر المعاينة هنا.</small>}</div>
+   <div className="x-preview" aria-label="معاينة">{o.parts.filter(x=>x.trim()).map((x,k)=><p key={k}>{x}</p>)}{!o.parts.some(x=>x.trim())&&<small className="muted">تظهر المعاينة هنا.</small>}</div>{(()=>{const h=styleHints(o.parts);return h.length>0&&<ul className="brand-hints" aria-label="ملاحظات دليل الأسلوب">{h.map(x=><li key={x}>{x}</li>)}</ul>})()}
   </div>)}
  </section>;
 }

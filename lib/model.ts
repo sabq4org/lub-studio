@@ -26,6 +26,19 @@ export type Member={id:string;version:number;name:string;role:string};
 export type TeamUser={id:string;name:string;role:string;status:string};
 export type Workspace={stories:Story[];tasks:Task[];members:Member[];users:TeamUser[];updatedAt:string};
 export const X_LIMIT=280;
+// Advisory checks from the «لُب» style guide (voice and figures). They never block review; the editor decides.
+const emoji=/\p{Extended_Pictographic}/u,easternDigits=/[٠-٩]/,figure=/[0-9٠-٩]/;
+const clickbait=['لن تصدق','صادم','عاجل وخطير','لا يفوتك','ستصدم'];
+export function styleHints(parts:string[]){
+ const text=parts.join('\n'),hints:string[]=[];
+ if(emoji.test(text))hints.push('دليل الأسلوب: لا رموز تعبيرية في النص.');
+ if(clickbait.some(w=>text.includes(w)))hints.push('دليل الأسلوب: اجعل العنوان سؤالًا أو خلاصة، لا تشويقًا فارغًا.');
+ if((text.match(/!/g)||[]).length>1)hints.push('دليل الأسلوب: علامة التعجب نادرة.');
+ if(easternDigits.test(text))hints.push('دليل الأسلوب: اكتب الأرقام بالأرقام الغربية 0–9.');
+ if(/[0-9]\s?%/.test(text))hints.push('دليل الأسلوب: استخدم علامة النسبة العربية «٪» بعد الرقم.');
+ if(figure.test(text)&&!text.includes('المصدر'))hints.push('دليل الأسلوب: أضف سطر «المصدر: الجهة، السنة» حين يرد رقم.');
+ return hints;
+}
 const completeSource=(x:Source)=>!!(x.url&&x.publisher.trim()&&x.accessedAt);
 // Requirements before a story can go to review, be approved, planned or published.
 export function blockers(s:Partial<Story>):string[]{
