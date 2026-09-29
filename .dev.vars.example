@@ -1,0 +1,10 @@
+# انسخ هذا الملف إلى .dev.vars (مُتجاهل في Git) وضع قيمًا خاصة بك.
+# Copy to .dev.vars (git-ignored). Never commit real values.
+
+# سر الخادم المطلوب لإنشاء أول حساب مالك ولاستعادة وصول المالك.
+# Use a long random value, e.g. `openssl rand -base64 32`.
+LUB_SETUP_TOKEN=
+
+# local (الافتراضي): يتجاهل ترويسات هوية Sites ويعتمد على جلسات لُب فقط.
+# sites: يثق بترويسات oai-authenticated-user-* التي تحقنها منصة Sites. لا تستخدمه على استضافة أخرى.
+LUB_AUTH_MODE=local

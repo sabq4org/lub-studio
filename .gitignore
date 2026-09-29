@@ -50,3 +50,4 @@ next-env.d.ts
 .dev.vars
 .dev.vars.*
 *.key
+!.dev.vars.example
