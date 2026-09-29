@@ -4,10 +4,11 @@ export const labels:Record<Status,string>={idea:'فكرة',research:'قيد ال
 export const series=['لُب يشرح','لُب بالأرقام','الصورة كاملة'];
 export const topics=['اقتصاد الحياة','التقنية وتأثيرها','السعودية بالأرقام'];
 export const formats=['فيديو قصير','إنفوجرافيك','موشن جرافيك','سلسلة منشورات','تغطية'];
-export type Story={id:string;version:number;title:string;series:string;topic:string;format:string;owner:string;status:Status;priority:string;due:string;plannedAt:string;angle:string;script:string;sourceUrl:string;sourceNote:string;sourceVerified:boolean;rightsVerified:boolean;assetUrl:string;postUrl:string;updatedAt:string;history:{at:string;message:string}[]};
+export type Story={id:string;version:number;title:string;series:string;topic:string;format:string;owner:string;researcher?:string;writer?:string;producer?:string;reviewer?:string;status:Status;priority:string;due:string;plannedAt:string;angle:string;script:string;sourceUrl:string;sourceNote:string;sourceVerified:boolean;rightsVerified:boolean;assetUrl:string;postUrl:string;updatedAt:string;approvedBy?:string;approvedAt?:string;publishedBy?:string;publishedAt?:string;history:{at:string;message:string;by?:string;byId?:string}[]};
 export type Task={id:string;version:number;title:string;owner:string;phase:string;done:boolean;acceptance:string;due:string};
 export type Member={id:string;version:number;name:string;role:string};
-export type Workspace={stories:Story[];tasks:Task[];members:Member[];updatedAt:string};
+export type TeamUser={id:string;name:string;role:string;status:string};
+export type Workspace={stories:Story[];tasks:Task[];members:Member[];users:TeamUser[];updatedAt:string};
 export function blockers(s:Partial<Story>):string[]{const b=[];if(!s.sourceUrl)b.push('إضافة رابط المصدر');if(!s.sourceVerified)b.push('التحقق من المصدر والأرقام');if(!s.script?.trim())b.push('كتابة النص النهائي');if(!s.rightsVerified)b.push('تأكيد حقوق المواد');if(s.format!=='سلسلة منشورات'&&!s.assetUrl)b.push('إرفاق رابط النسخة النهائية');return b;}
 export function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
 export function gaps(stories:Story[]){const active=stories.filter(s=>!['published','archived'].includes(s.status));return [
