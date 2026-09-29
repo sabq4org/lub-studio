@@ -71,7 +71,7 @@ try{
  await status(editor.ws({action:'saveStory',id:story.id,version:story.version,data:{...story,reviewer:reviewer.id}}),403,'editor cannot assign');
  const save=async(c,data,label)=>{const r=await ok(c.ws({action:'saveStory',id:story.id,version:story.version,data:{...story,...data}}),label);story=r.workspace.stories.find(s=>s.id===story.id);return r;};
  const move=async(c,target,label,extra={})=>{const r=await ok(c.ws({action:'transition',id:story.id,version:story.version,target,...extra}),label);story=r.workspace.stories.find(s=>s.id===story.id);return r;};
- await save(editor,{script:ready.script,sourceUrl:ready.sourceUrl,sourceVerified:true},'editor edits own content');
+ await save(editor,{script:ready.script,sources:[{id:'s1',url:'https://example.com/source',publisher:'جهة',title:'',publishedAt:'',accessedAt:'2026-09-29',kind:'official'}],outputs:[{id:'o1',platform:'x',format:'post',parts:['منشور'],assetUrl:''}],sourceVerified:true},'editor edits own content');
  await status(editor.ws({action:'saveStory',id:story.id,version:story.version,data:{...story,assetUrl:ready.assetUrl}}),403,'editor cannot set assets');
  await move(editor,'research','editor starts research');await move(editor,'production','editor starts production');
 
@@ -85,7 +85,10 @@ try{
  // Review: reviewer returns, only managers approve.
  await status(reviewer.ws({action:'transition',id:story.id,version:story.version,target:'approved'}),403,'reviewer cannot approve');
  await status(editor.ws({action:'transition',id:story.id,version:story.version,target:'approved'}),403,'editor cannot approve');
- await move(reviewer,'production','reviewer returns');await move(producer,'review','resubmit');
+ await status(reviewer.ws({action:'transition',id:story.id,version:story.version,target:'production'}),400,'return needs a reason');await move(reviewer,'production','reviewer returns',{note:'راجع صياغة الافتتاحية'});await move(producer,'review','resubmit');
+ await status(editor.ws({action:'setChecklist',id:story.id,version:story.version,checklist:{sources:true}}),403,'editor cannot tick the review checklist');
+ const all={sources:true,figures:true,labels:true,quotes:true,rights:true,language:true,platform:true};
+ story=(await ok(reviewer.ws({action:'setChecklist',id:story.id,version:story.version,checklist:all}),'reviewer ticks checklist')).workspace.stories.find(s=>s.id===story.id);
  await move(manager,'approved','manager approves');assert.equal(story.approvedBy,manager.id);
 
  // Publishing: publisher plans and records; manager cannot publish.

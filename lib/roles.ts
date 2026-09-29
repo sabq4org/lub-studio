@@ -31,8 +31,8 @@ export const assignmentLabels:Record<typeof assignmentFields[number],string>={ow
 type StoryLike={owner?:string;researcher?:string;writer?:string;producer?:string;reviewer?:string;status?:string};
 export function assignedTo(story:StoryLike,userId:string){return assignmentFields.some(f=>story[f]===userId);}
 
-const contentFields=['title','series','topic','format','angle','script','sourceUrl','sourceNote','sourceVerified'];
-const assetFields=['assetUrl','rightsVerified'];
+const contentFields=['title','series','topic','format','angle','audience','script','sources','claims','outputs','sourceUrl','sourceNote','sourceVerified'];
+const assetFields=['assetUrl','rightsVerified','outputs'];
 // Fields each actor may change on a given story. Managers edit everything; others only what their role produces, on stories assigned to them.
 export function editableFields(actor:Actor|null|undefined,story:StoryLike):Set<string>{
  if(!actor)return new Set();
@@ -51,6 +51,7 @@ export function canTransition(actor:Actor|null|undefined,story:StoryLike,target:
  const from=story.status||'',manager=can(actor,'story.manage'),mine=assignedTo(story,actor.id);
  if(target==='archived'||from==='archived')return manager;
  if(from==='idea'&&target==='research'||from==='research'&&target==='production')return manager||actor.role==='editor'&&mine;
+ if(from==='production'&&target==='research')return manager||actor.role==='editor'&&mine;
  if(from==='production'&&target==='review')return manager||(actor.role==='editor'||actor.role==='producer')&&mine;
  if(from==='review'&&target==='approved')return manager;
  if(from==='review'&&target==='production')return manager||actor.role==='reviewer'&&(!story.reviewer||story.reviewer===actor.id);
@@ -60,3 +61,7 @@ export function canTransition(actor:Actor|null|undefined,story:StoryLike,target:
  if(target==='production')return manager;
  return false;
 }
+
+// Review checklist: the story's reviewer (or any reviewer when none is assigned) and managers, while in review.
+export function canChecklist(actor:Actor|null|undefined,story:StoryLike){if(!actor||story.status!=='review')return false;return can(actor,'story.manage')||actor.role==='reviewer'&&(!story.reviewer||story.reviewer===actor.id);}
+export function canComment(actor:Actor|null|undefined){return !!actor&&actor.role!=='viewer';}
