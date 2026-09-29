@@ -15,6 +15,13 @@
       "when": 1790685925262,
       "tag": "0001_team_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1790687165729,
+      "tag": "0002_editorial_cycle",
+      "breakpoints": true
     }
   ]
 }

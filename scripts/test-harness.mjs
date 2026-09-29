@@ -6,7 +6,7 @@ const rootRequire=createRequire(import.meta.url);
 const wranglerRequire=createRequire(rootRequire.resolve('wrangler/package.json'));
 const {Miniflare}=wranglerRequire('miniflare');
 const {build}=wranglerRequire('esbuild');
-const routes={'/api/workspace':'./app/api/workspace/route','/api/auth':'./app/api/auth/route','/api/team':'./app/api/team/route','/api/activity':'./app/api/activity/route'};
+const routes={'/api/workspace':'./app/api/workspace/route','/api/auth':'./app/api/auth/route','/api/team':'./app/api/team/route','/api/activity':'./app/api/activity/route','/api/story':'./app/api/story/route'};
 
 export const SETUP_TOKEN='test-setup-token-not-a-secret';
 export async function startWorker(name,bindings={}){

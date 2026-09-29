@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, index, uniqueIndex } from 'drizzle-orm/sqlite-core';
 export const records = sqliteTable('lub_records', {
  id:text('id').primaryKey(), kind:text('kind').notNull(), payload:text('payload').notNull(),
  version:integer('version').notNull().default(1), updatedAt:text('updated_at').notNull()
@@ -24,3 +24,12 @@ export const activity=sqliteTable('lub_activity',{
  entityKind:text('entity_kind').notNull(), entityId:text('entity_id'), summary:text('summary').notNull(), details:text('details')
 },t=>[index('lub_activity_at_idx').on(t.at),index('lub_activity_entity_idx').on(t.entityId)]);
 export const loginAttempts=sqliteTable('lub_login_attempts',{key:text('key').primaryKey(),count:integer('count').notNull(),windowStart:text('window_start').notNull()});
+// Immutable snapshots of a story's reviewable content; approval points at one of them.
+export const storyVersions=sqliteTable('lub_story_versions',{
+ id:text('id').primaryKey(), storyId:text('story_id').notNull(), n:integer('n').notNull(), hash:text('hash').notNull(), payload:text('payload').notNull(),
+ reason:text('reason').notNull(), actorId:text('actor_id'), actorName:text('actor_name').notNull(), at:text('at').notNull()
+},t=>[uniqueIndex('lub_story_versions_story_n').on(t.storyId,t.n)]);
+export const comments=sqliteTable('lub_comments',{
+ id:text('id').primaryKey(), storyId:text('story_id').notNull(), kind:text('kind').notNull(), body:text('body').notNull(), authorId:text('author_id'), authorName:text('author_name').notNull(),
+ createdAt:text('created_at').notNull(), resolvedAt:text('resolved_at'), resolvedBy:text('resolved_by')
+},t=>[index('lub_comments_story_idx').on(t.storyId)]);

@@ -10,8 +10,9 @@ try{
  const transition=async target=>changed({action:'transition',id:s.id,version:s.version,target});
  await transition('research');await transition('production');assert.equal((await call({action:'transition',id:s.id,version:s.version,target:'approved'})).status,400);
  assert.equal((await call({action:'transition',id:s.id,version:s.version,target:'review'})).status,400);
- await changed({action:'saveStory',id:s.id,version:s.version,data:{...s,script:'نص تجريبي للاختبار فقط',sourceUrl:'https://example.com/source',sourceVerified:true,rightsVerified:true,assetUrl:'https://example.com/asset'}});
- await transition('review');await transition('approved');assert.ok(s.approvedBy&&s.approvedAt,'approval records who approved');
+ await changed({action:'saveStory',id:s.id,version:s.version,data:{...s,script:'نص تجريبي للاختبار فقط',sources:[{id:'s1',url:'https://example.com/source',publisher:'جهة اختبار',title:'',publishedAt:'',accessedAt:'2026-09-29',kind:'official_sa'}],outputs:[{id:'o1',platform:'x',format:'post',parts:['منشور اختبار'],assetUrl:''}],sourceVerified:true,rightsVerified:true,assetUrl:'https://example.com/asset'}});
+ await transition('review');assert.equal((await call({action:'transition',id:s.id,version:s.version,target:'approved'})).status,400,'approval needs the checklist');
+ await changed({action:'setChecklist',id:s.id,version:s.version,checklist:{sources:true,figures:true,labels:true,quotes:true,rights:true,language:true,platform:true}});await transition('approved');assert.ok(s.approvedBy&&s.approvedAt,'approval records who approved');
  const oldVersion=s.version;
  await changed({action:'saveStory',id:s.id,version:s.version,data:{...s,script:'نص معدل يحتاج إعادة اعتماد'}});assert.equal(s.status,'production');assert.equal(s.approvedBy,'');
  assert.equal((await call({action:'saveStory',id:s.id,version:oldVersion,data:s})).status,409);
